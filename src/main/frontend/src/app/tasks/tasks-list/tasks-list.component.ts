@@ -20,13 +20,18 @@ export class TasksListComponent implements OnInit {
     // this.tasks.push(new Task(2, "Task 2", false, "02/12/18"));
     // this.tasks.push(new Task(3, "Task 3", true, "02/10/18"));
 
-    return this.taskService.getTasks()
+    this.taskService.getTasks()
       .subscribe( // needs to be subscribed because getTasks returns a promise from rxJS
         (tasks: any[]) => {
           this.tasks = tasks
         },
         (error) => console.log(error())
-      )
+      );
+
+    // if a new Task is on the EventEmitter take it and push it on the tasks array
+    this.taskService.onTaskAdded.subscribe(
+      (task: Task) => this.tasks.push(task)
+    )
   }
 
   getDueDateLabel(task: Task) {
@@ -34,8 +39,8 @@ export class TasksListComponent implements OnInit {
   }
 
   onTaskChange(event, task) {
-    // this.taskService.saveTask(task, event.target.checked).subscribe();
-    console.log('Task has changed');
+    this.taskService.saveTask(task, event.target.checked).subscribe();
+    // console.log('Task has changed');
   }
 
 }
